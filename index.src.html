@@ -1,0 +1,173 @@
+<main>
+  <section class="hero gutter">
+    <div class="container">
+      <a class="eyebrow" href="#changelog"><b>V{{version}}</b>Now called Viaduct, with 4- and 6-layer boards&nbsp;›</a>
+      <h1>Describe a circuit board. <span>Get one you can order.</span></h1>
+      <p class="sub">Viaduct is a Claude Code plugin that designs printed circuit boards. Say what the board should do; it picks real parts, draws the schematic, places and routes the board in KiCad, checks it, and hands you Gerbers, a BOM and a pick-and-place file.</p>
+      <div class="actions">
+        <a class="btn btn-claude" href="#install">{{claude}}Install for Claude Code</a>
+        <a class="btn btn-ghost" href="{{repo}}">{{github}}View on GitHub</a>
+      </div>
+      <div class="works-with">
+        <span>{{claude}}Claude Code</span>
+        <span>{{kicad}}KiCad 9</span>
+        <span>macOS and Windows</span>
+        <span>JLCPCB or any fab house</span>
+      </div>
+
+      <div class="hero-demo">
+        <div class="term" role="img" aria-label="A Claude Code session running /viaduct:design and ending with READY TO ORDER">
+          <div class="term-bar"><i></i><i></i><i></i><span>claude · ~/projects/sensor</span></div>
+<pre><span class="p">&gt;</span> /viaduct:design a USB-C powered ESP32-C3 board with an RGB
+  status LED, reset and boot buttons, and a 4-pin sensor header
+
+<span class="c">  Asked: size, power, connectors, build method, noise</span>
+<span class="c">  Parts: ESP32-C3-WROOM-02, AMS1117-3.3, USBLC6, WS2812B, MCP6002</span>
+
+<span class="b">layers</span> 2 (auto: only 7 of the 30 most similar real boards use 4+)
+<span class="b">build </span> 56 x 41 mm, 2 layers (7s)
+<span class="b">route </span> complete, 7 vias (11s)
+<span class="b">checks</span> ERC ok, DRC ok, noise 13 pass / 0 fail
+
+<span class="g">READY TO ORDER</span>: ESP32-C3 sensor node
+<span class="c">  fab/  gerbers.zip  bom.csv  positions.csv</span></pre>
+        </div>
+        <figure class="hero-shot" style="margin:0">
+          <img src="img/boards/rp2040.webp" alt="3D render of an RP2040 climate logger board Viaduct designed, placed and routed" width="1200" height="829">
+          <figcaption class="tag">RP2040 climate logger · 44 parts · routed by Viaduct</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="examples">
+    <div class="container gutter">
+      <div class="sec-head">
+        <div>
+          <p class="kicker">Examples</p>
+          <h2>Boards it designed, start to finish</h2>
+          <p class="lead">Each one came from a written description. Times are the total from description to manufacturing files, from the latest test run.</p>
+        </div>
+        <div class="g-ctrl">
+          <button type="button" id="g-prev" aria-label="Previous boards"><svg class="icon" viewBox="0 0 16 16"><path d="M10 3 5 8l5 5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button>
+          <button type="button" id="g-next" aria-label="Next boards"><svg class="icon" viewBox="0 0 16 16"><path d="m6 3 5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg></button>
+        </div>
+      </div>
+    </div>
+    <div class="gallery-wrap">
+      <div class="gallery" id="gallery" tabindex="0" aria-label="Example boards">
+        <article class="card">
+          <div class="img"><img src="img/boards/rp2040.webp" alt="RP2040 climate logger board" loading="lazy" width="1200" height="829"></div>
+          <div class="meta"><div><h3>RP2040 climate logger</h3><p>USB-C, flash, crystal, sensor, 44 parts</p></div><div class="stat"><b>Ready</b>57 × 41 mm · 2L<br>5 min 46 s</div></div>
+        </article>
+        <article class="card">
+          <div class="img"><img src="img/boards/c3-4layer.webp" alt="ESP32-C3 sensor node on four layers" loading="lazy" width="1200" height="828"></div>
+          <div class="meta"><div><h3>ESP32-C3 sensor, 4 layers</h3><p>Inner ground and 3.3 V planes</p></div><div class="stat"><b>Ready</b>60 × 42 mm · 4L<br>21 s</div></div>
+        </article>
+        <article class="card">
+          <div class="img"><img src="img/boards/c3-blocks.webp" alt="ESP32-C3 sensor node built from building blocks" loading="lazy" width="1200" height="822"></div>
+          <div class="meta"><div><h3>ESP32-C3 from building blocks</h3><p>USB-C data, LDO, Wi-Fi module, LED</p></div><div class="stat"><b>Ready</b>58 × 43 mm · 2L<br>21 s</div></div>
+        </article>
+        <article class="card">
+          <div class="img sch"><img src="img/c3_sensor_schematic.jpg" alt="Generated schematic for the ESP32-C3 sensor node" loading="lazy" width="1600" height="1131"></div>
+          <div class="meta"><div><h3>The schematic it drew</h3><p>Grouped by function, labelled nets, editable in KiCad</p></div><div class="stat"><b>ERC clean</b>.kicad_sch</div></div>
+        </article>
+        <article class="card">
+          <div class="img"><img src="img/boards/blinker.webp" alt="USB-C ATtiny85 LED blinker board" loading="lazy" width="1200" height="918"></div>
+          <div class="meta"><div><h3>USB-C ATtiny85 blinker</h3><p>The smallest example, 10 parts</p></div><div class="stat"><b>Ready</b>30 × 22 mm · 2L<br>17 s</div></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section gutter" id="how">
+    <div class="container steps">
+      <div class="sticky">
+        <p class="kicker">How it works</p>
+        <h2>The steps a PCB designer takes, in order</h2>
+        <p class="lead">Every step leaves a normal KiCad 9 project you can open and change. Claude asks when a choice changes the design and says up front what will be automatic.</p>
+        <p style="margin-top:20px"><a class="more" href="docs/how-it-works.html">Read how it works ›</a></p>
+      </div>
+      <ol class="step-list">
+        <li><span class="n">01</span><div><h3>Requirements</h3><p>One round of questions: size, power, connectors and their edges, how you'll build it, anything noise-sensitive.</p></div><span class="out">requirements</span></li>
+        <li><span class="n">02</span><div><h3>Parts and schematic</h3><p>Verified building blocks and real parts with stock numbers. Every pin is checked against KiCad's libraries before anything is drawn.</p></div><span class="out">.kicad_sch</span></li>
+        <li><span class="n">03</span><div><h3>Layer count</h3><p>2, 4 or 6 layers, chosen from the design's complexity and explained, or set by you.</p></div><span class="out">stackup</span></li>
+        <li><span class="n">04</span><div><h3>Placement</h3><p>Connectors flush to their edges, decoupling capacitors at their pins, room for chips to fan out, noisy parts away from sensitive ones.</p></div><span class="out">.kicad_pcb</span></li>
+        <li><span class="n">05</span><div><h3>Routing and checks</h3><p>Autorouted with ground pours and stitching, then DRC, electrical and noise checks.</p></div><span class="out">DRC report</span></li>
+        <li><span class="n">06</span><div><h3>Manufacturing files</h3><p>Gerbers and drill files, a BOM and a pick-and-place file in JLCPCB's format, with an ordering checklist.</p></div><span class="out">fab/</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="section gutter" id="layers">
+    <div class="container split">
+      <div>
+        <p class="kicker">New in V2.5</p>
+        <h2>2, 4 or 6 layers. Or let it decide.</h2>
+        <p class="lead">On Auto, Viaduct compares your design with real routed boards and picks the layer count, then tells you why.</p>
+        <div class="modes">
+          <div class="mode"><code class="auto">auto</code><p>4 layers for BGAs, high-speed interfaces like Ethernet or DDR, or when most similar boards use 4. Otherwise 2.</p></div>
+          <div class="mode"><code>2</code><p>Cheapest. Right for most hobby and product boards.</p></div>
+          <div class="mode"><code>4</code><p>A solid ground plane and a power plane inside the board.</p></div>
+          <div class="mode"><code>6</code><p>Both planes plus two inner signal layers.</p></div>
+        </div>
+      </div>
+      <div class="stack" aria-label="Four-layer stackup">
+        <div class="layer"><span>F.Cu</span><div class="cu sig"></div><em>signals</em></div>
+        <div class="layer core"><span></span><div class="fr"></div></div>
+        <div class="layer"><span>In1.Cu</span><div class="cu plane"></div><em>GND plane</em></div>
+        <div class="layer core"><span></span><div class="fr"></div></div>
+        <div class="layer"><span>In2.Cu</span><div class="cu pwr"></div><em>+3V3 plane</em></div>
+        <div class="layer core"><span></span><div class="fr"></div></div>
+        <div class="layer"><span>B.Cu</span><div class="cu sig"></div><em>signals</em></div>
+        <p style="margin-top:22px;font-size:13px;color:var(--muted)">The 4-layer ESP32-C3 example: planes on In1 and In2, routed in 10 seconds, DRC clean.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section gutter" id="commands">
+    <div class="container">
+      <p class="kicker">Commands</p>
+      <h2>Four commands in Claude Code</h2>
+      <div class="cmd-grid">
+        <div class="cmd"><code>/viaduct:design</code><p>An idea to a board ready to order.</p></div>
+        <div class="cmd"><code>/viaduct:review</code><p>Check any KiCad project before you order it.</p></div>
+        <div class="cmd"><code>/viaduct:inquiry</code><p>Ask a question, or get feedback on a schematic or board.</p></div>
+        <div class="cmd"><code>/viaduct:fab</code><p>Gerbers, BOM, pick-and-place and an ordering checklist.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section gutter" id="install">
+    <div class="container install">
+      <div>
+        <p class="kicker">Install</p>
+        <h2>Two commands</h2>
+        <p class="lead">Run these in Terminal on macOS or PowerShell on Windows, then start Claude Code.</p>
+        <div class="copy"><span class="pr">$</span><code id="c1">claude plugin marketplace add virajrungta/viaduct</code><button type="button" id="b1" data-for="c1">Copy</button></div>
+        <div class="copy"><span class="pr">$</span><code id="c2">claude plugin install viaduct@viaduct</code><button type="button" id="b2" data-for="c2">Copy</button></div>
+        <p class="req">Needs <a href="https://claude.com/claude-code">Claude Code</a>, <a href="https://www.kicad.org/download/">KiCad 9</a> and Java 21+. <a href="docs/getting-started.html">Full setup guide ›</a></p>
+      </div>
+      <div id="changelog">
+        <p class="kicker">Changelog</p>
+        <ul class="log">
+{{releases}}
+        </ul>
+        <a class="more" href="{{repo}}/blob/main/CHANGELOG.md">All releases ›</a>
+      </div>
+    </div>
+  </section>
+
+  <div class="gutter">
+    <div class="container cta">
+      <div>
+        <h2>Your next board starts as a sentence.</h2>
+        <p>Free and open source. Your boards stay on your machine.</p>
+      </div>
+      <div class="actions">
+        <a class="btn btn-claude" href="#install">{{claude}}Install for Claude Code</a>
+        <a class="btn btn-ghost" href="docs/getting-started.html">Read the docs</a>
+      </div>
+    </div>
+  </div>
+</main>
