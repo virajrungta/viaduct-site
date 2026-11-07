@@ -15,6 +15,8 @@ import sys
 import markdown
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+OUT = os.path.join(HERE, "public")          # the deployed site (see deploy.sh)
+ASSETS = ["site.css", "logo.svg", "favicon.svg", "apple-touch-icon.png", "img"]
 PLUGIN = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else os.path.join(HERE, "..", "pcb-plugin"))
 REPO = "https://github.com/virajrungta/viaduct"
 VERSION = "2.6"
@@ -43,7 +45,7 @@ def head(title, desc, root):
 <meta name="description" content="%s">
 <meta property="og:title" content="%s">
 <meta property="og:description" content="%s">
-<meta property="og:image" content="https://virajrungta.github.io/viaduct-site/img/og.png">
+<meta property="og:image" content="https://virajrungta.github.io/viaduct/img/og.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="%sfavicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="%sapple-touch-icon.png">
@@ -147,7 +149,7 @@ def build_index():
     page = (page.replace("{{claude}}", icon("claude")).replace("{{github}}", icon("github"))
             .replace("{{kicad}}", icon("kicad")).replace("{{releases}}", releases(4))
             .replace("{{repo}}", REPO).replace("{{version}}", VERSION))
-    open(os.path.join(HERE, "index.html"), "w").write(page)
+    open(os.path.join(OUT, "index.html"), "w").write(page)
 
 
 def _fix_links(text):
@@ -169,9 +171,9 @@ def _fix_links(text):
 
 
 def build_docs():
-    out_dir = os.path.join(HERE, "docs")
+    out_dir = os.path.join(OUT, "docs")
     os.makedirs(out_dir, exist_ok=True)
-    img_dir = os.path.join(HERE, "img", "docs")
+    img_dir = os.path.join(OUT, "img", "docs")
     os.makedirs(img_dir, exist_ok=True)
     src_imgs = os.path.join(PLUGIN, "docs", "images")
     for f in os.listdir(src_imgs) if os.path.isdir(src_imgs) else []:
@@ -214,7 +216,17 @@ def build_docs():
         open(os.path.join(out_dir, name + ".html"), "w").write(page)
 
 
+def copy_assets():
+    shutil.rmtree(OUT, ignore_errors=True)
+    os.makedirs(OUT)
+    for a in ASSETS:
+        src = os.path.join(HERE, a)
+        (shutil.copytree if os.path.isdir(src) else shutil.copy)(src, os.path.join(OUT, a))
+    open(os.path.join(OUT, ".nojekyll"), "w").close()
+
+
 if __name__ == "__main__":
+    copy_assets()
     build_index()
     build_docs()
-    print("built index.html and %d docs pages from %s" % (len(DOCS), PLUGIN))
+    print("built public/ (index + %d docs pages) from %s" % (len(DOCS), PLUGIN))
