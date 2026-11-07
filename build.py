@@ -16,7 +16,7 @@ import markdown
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "public")          # the deployed site (see deploy.sh)
-ASSETS = ["site.css", "logo.svg", "favicon.svg", "apple-touch-icon.png", "img"]
+ASSETS = ["site.css", "logo.svg", "favicon.svg", "apple-touch-icon.png", "img", "video"]
 PLUGIN = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else os.path.join(HERE, "..", "pcb-plugin"))
 REPO = "https://github.com/virajrungta/viaduct"
 VERSION = "2.7"
@@ -59,7 +59,8 @@ def head(title, desc, root):
 
 
 def topbar(root, active):
-    links = [("Docs", root + "docs/getting-started.html", "docs"),
+    links = [("Demo", root + "index.html#demo", "demo"),
+             ("Docs", root + "docs/getting-started.html", "docs"),
              ("Examples", root + "#examples", "examples"),
              ("Changelog", root + "#changelog", "changelog"),
              ("Releases", REPO + "/releases", "")]
