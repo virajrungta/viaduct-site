@@ -19,7 +19,7 @@ OUT = os.path.join(HERE, "public")          # the deployed site (see deploy.sh)
 ASSETS = ["site.css", "logo.svg", "favicon.svg", "apple-touch-icon.png", "img", "video"]
 PLUGIN = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else os.path.join(HERE, "..", "pcb-plugin"))
 REPO = "https://github.com/virajrungta/viaduct"
-VERSION = "2.10"
+VERSION = "2.11"
 
 DOCS = [  # (file, title, group)
     ("getting-started", "Getting started", "Start here"),
