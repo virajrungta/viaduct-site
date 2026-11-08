@@ -45,7 +45,7 @@ def head(title, desc, root):
 <meta name="description" content="%s">
 <meta property="og:title" content="%s">
 <meta property="og:description" content="%s">
-<meta property="og:image" content="https://virajrungta.github.io/viaduct/img/og.png">
+<meta property="og:image" content="https://viaduct-pcb.github.io/img/og.png">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="%sfavicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="%sapple-touch-icon.png">
