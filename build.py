@@ -157,6 +157,16 @@ def build_index():
     open(os.path.join(OUT, "index.html"), "w").write(page)
 
 
+def build_stats():
+    """Unlisted usage page (stats.json comes from ~/Developer/viaduct-stats/stats.py)."""
+    page = (head("Viaduct usage", "How many people use Viaduct.", "")
+            .replace("</head>", '<meta name="robots" content="noindex, nofollow">\n</head>')
+            + topbar("", "") + open(os.path.join(HERE, "stats.src.html")).read() + footer(""))
+    open(os.path.join(OUT, "stats.html"), "w").write(page)
+    if os.path.exists(os.path.join(HERE, "stats.json")):
+        shutil.copy(os.path.join(HERE, "stats.json"), OUT)
+
+
 def _fix_links(text):
     def repl(m):
         label, target = m.group(1), m.group(2)
@@ -233,5 +243,6 @@ def copy_assets():
 if __name__ == "__main__":
     copy_assets()
     build_index()
+    build_stats()
     build_docs()
     print("built public/ (index + %d docs pages) from %s" % (len(DOCS), PLUGIN))
