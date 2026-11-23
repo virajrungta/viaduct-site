@@ -12,6 +12,7 @@ import os
 import re
 import shutil
 import sys
+import urllib.request
 
 import markdown
 
@@ -151,20 +152,30 @@ def build_index():
     page = (head("Viaduct: PCB design for Claude Code",
                  "Describe a circuit board in plain English. Viaduct, a Claude Code plugin, designs it in KiCad and hands you Gerbers, BOM and pick-and-place files ready to order.", "")
             + topbar("", "") + src + footer("") + SCRIPT)
+    for k, v in numbers().items():
+        page = page.replace(k, v)
     page = (page.replace("{{claude}}", icon("claude")).replace("{{github}}", icon("github"))
             .replace("{{kicad}}", icon("kicad")).replace("{{releases}}", releases(4))
             .replace("{{star}}", STAR).replace("{{repo}}", REPO).replace("{{version}}", VERSION))
     open(os.path.join(OUT, "index.html"), "w").write(page)
 
 
-def build_stats():
-    """Unlisted usage page (stats.json comes from ~/Developer/viaduct-stats/stats.py)."""
-    page = (head("Viaduct usage", "How many people use Viaduct.", "")
-            .replace("</head>", '<meta name="robots" content="noindex, nofollow">\n</head>')
-            + topbar("", "") + open(os.path.join(HERE, "stats.src.html")).read() + footer(""))
-    open(os.path.join(OUT, "stats.html"), "w").write(page)
-    if os.path.exists(os.path.join(HERE, "stats.json")):
-        shutil.copy(os.path.join(HERE, "stats.json"), OUT)
+def numbers():
+    """The homepage's numbers strip. People comes from ~/Developer/viaduct-stats/stats.py
+    (it writes stats.json here, locally; only the rounded number is published)."""
+    people = "–"
+    try:
+        mid = json.load(open(os.path.join(HERE, "stats.json")))["estimate"]["mid"]
+        people = "%d+" % (mid // 10 * 10) if mid >= 20 else str(mid)
+    except (OSError, ValueError, KeyError):
+        pass
+    try:
+        stars = str(json.load(urllib.request.urlopen("https://api.github.com/repos/virajrungta/viaduct", timeout=10))["stargazers_count"])
+    except Exception:
+        stars = "–"
+    nrel = sum(1 for line in open(os.path.join(PLUGIN, "RELEASES.md")) if line.startswith("| [V"))
+    nblocks = len([k for k in json.load(open(os.path.join(PLUGIN, "data", "blocks.json"))) if not k.startswith("_")])
+    return {"{{people}}": people, "{{stars}}": stars, "{{nreleases}}": str(nrel), "{{nblocks}}": str(nblocks)}
 
 
 def _fix_links(text):
@@ -243,6 +254,5 @@ def copy_assets():
 if __name__ == "__main__":
     copy_assets()
     build_index()
-    build_stats()
     build_docs()
     print("built public/ (index + %d docs pages) from %s" % (len(DOCS), PLUGIN))
