@@ -1,12 +1,12 @@
 <main>
   <section class="hero gutter">
     <div class="container">
-      <a class="eyebrow" href="#changelog"><b>V{{version}}</b>A clearer README with the demo video&nbsp;›</a>
+      <a class="eyebrow" href="#changelog"><b>V{{version}}</b>See what's new&nbsp;›</a>
       <h1>Describe a circuit board. <span>Get one you can order.</span></h1>
       <p class="sub">Viaduct is a Claude Code plugin that designs printed circuit boards. Say what the board should do; it picks real parts, draws the schematic, places and routes the board in KiCad, checks it, and hands you Gerbers, a BOM and a pick-and-place file.</p>
       <div class="actions">
         <a class="btn btn-claude" href="#install">{{claude}}Install for Claude Code</a>
-        <a class="btn btn-ghost" href="{{repo}}">{{github}}View on GitHub</a>
+        <a class="btn btn-ghost" href="{{repo}}">{{star}}Star on GitHub</a>
       </div>
       <div class="works-with">
         <span>{{claude}}Claude Code</span>
@@ -163,13 +163,14 @@
         <div class="copy"><span class="pr">$</span><code id="c1">claude plugin marketplace add virajrungta/viaduct</code><button type="button" id="b1" data-for="c1">Copy</button></div>
         <div class="copy"><span class="pr">$</span><code id="c2">claude plugin install viaduct@viaduct</code><button type="button" id="b2" data-for="c2">Copy</button></div>
         <p class="req">Needs <a href="https://claude.com/claude-code">Claude Code</a>, <a href="https://www.kicad.org/download/">KiCad 9</a> and Java 21+. <a href="docs/getting-started.html">Full setup guide ›</a></p>
+        <p class="req">Free and open source. If Viaduct helps you, <a href="{{repo}}">a star on GitHub</a> helps other people find it.</p>
       </div>
       <div id="changelog">
         <p class="kicker">Changelog</p>
         <ul class="log">
 {{releases}}
         </ul>
-        <a class="more" href="{{repo}}/blob/main/CHANGELOG.md">All releases ›</a>
+        <a class="more" href="{{repo}}/blob/main/plugin/CHANGELOG.md">All releases ›</a>
       </div>
     </div>
   </section>

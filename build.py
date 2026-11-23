@@ -7,6 +7,7 @@ The docs pages are generated from the plugin repo's docs/*.md so the site never
 drifts from the repo. Needs the `markdown` package (pip install markdown)."""
 
 import html
+import json
 import os
 import re
 import shutil
@@ -18,8 +19,11 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(HERE, "public")          # the deployed site (see deploy.sh)
 ASSETS = ["site.css", "logo.svg", "favicon.svg", "apple-touch-icon.png", "img", "video"]
 PLUGIN = os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else os.path.join(HERE, "..", "pcb-plugin"))
+if os.path.isdir(os.path.join(PLUGIN, "plugin", ".claude-plugin")):   # V2.12+: the plugin lives in plugin/
+    PLUGIN = os.path.join(PLUGIN, "plugin")
 REPO = "https://github.com/virajrungta/viaduct"
-VERSION = "2.11"
+VERSION = json.load(open(os.path.join(PLUGIN, ".claude-plugin", "plugin.json")))["version"]
+STAR = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6L2.5 9.4l6.6-.8z"/></svg>'
 
 DOCS = [  # (file, title, group)
     ("getting-started", "Getting started", "Start here"),
@@ -71,7 +75,7 @@ def topbar(root, active):
     <a class="logo" href="%(root)sindex.html"><img src="%(root)slogo.svg" alt="" width="26" height="26">Viaduct</a>
     <nav class="nav" aria-label="Main">%(nav)s</nav>
     <div class="bar-right">
-      <a class="gh-link" href="%(repo)s">%(gh)s<span class="label">GitHub</span><span class="count">v%(ver)s</span></a>
+      <a class="gh-link" href="%(repo)s">%(gh)s<span class="label">Star on GitHub</span><span class="count">v%(ver)s</span></a>
       <a class="btn btn-claude btn-sm" href="%(root)sindex.html#install">%(claude)s<span class="long">Install for Claude Code</span><span class="short">Install</span></a>
     </div>
   </div>
@@ -149,7 +153,7 @@ def build_index():
             + topbar("", "") + src + footer("") + SCRIPT)
     page = (page.replace("{{claude}}", icon("claude")).replace("{{github}}", icon("github"))
             .replace("{{kicad}}", icon("kicad")).replace("{{releases}}", releases(4))
-            .replace("{{repo}}", REPO).replace("{{version}}", VERSION))
+            .replace("{{star}}", STAR).replace("{{repo}}", REPO).replace("{{version}}", VERSION))
     open(os.path.join(OUT, "index.html"), "w").write(page)
 
 
