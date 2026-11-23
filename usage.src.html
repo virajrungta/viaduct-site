@@ -1,0 +1,53 @@
+<main class="usage gutter">
+  <div class="container">
+    <p class="kicker">Usage</p>
+    <h1>Who's using Viaduct</h1>
+    <p class="lead">Updated {{u_updated}}.</p>
+
+    <dl class="numbers">
+      <div><dt>{{u_people}}</dt><dd>people have added Viaduct</dd></div>
+      <div><dt>{{u_week}}</dt><dd>new in the last 7 days</dd></div>
+      <div><dt>{{u_engine}}</dt><dd>directory installs</dd></div>
+      <div><dt id="n-stars">{{stars}}</dt><dd>stars on GitHub</dd></div>
+    </dl>
+
+    <div class="usage-chart">
+      <h2>New people per day</h2>
+      <svg id="chart" role="img" aria-label="New people adding Viaduct per day" width="100%" height="220"></svg>
+    </div>
+
+    <p class="usage-note">Counted from GitHub's daily repository clones, the way Claude Code installs plugins, with automated clones and repeat visits taken out. Viaduct itself collects no data.</p>
+  </div>
+</main>
+
+<script>
+(function () {
+  var days = {{u_days}};
+  var svg = document.getElementById("chart");
+  function draw() {
+    var W = Math.max(svg.clientWidth || 600, 320), H = 220, padL = 30, padB = 24, padT = 8;
+    var iw = W - padL - 4, ih = H - padB - padT;
+    var max = Math.max(4, Math.max.apply(null, days.map(function (d) { return d[1]; })));
+    var raw = max / 4, mag = Math.pow(10, Math.floor(Math.log10(raw)));
+    var tick = [1, 2, 5, 10].map(function (m) { return m * mag; }).filter(function (t) { return t >= raw; })[0];
+    var top = tick * 4, bw = iw / days.length, out = "";
+    for (var i = 0; i <= 4; i++) {
+      var y = padT + ih - ih * i / 4;
+      out += '<line x1="' + padL + '" x2="' + (W - 4) + '" y1="' + y + '" y2="' + y + '" stroke="var(--border)"/>' +
+             '<text x="' + (padL - 6) + '" y="' + (y + 4) + '" text-anchor="end">' + Math.round(top * i / 4) + '</text>';
+    }
+    var every = Math.ceil(days.length / Math.max(4, Math.floor(iw / 56)));
+    days.forEach(function (d, i) {
+      var x = padL + i * bw, h = ih * d[1] / top;
+      out += '<rect x="' + (x + bw * 0.16) + '" y="' + (padT + ih - h) + '" width="' + (bw * 0.68) + '" height="' + h +
+             '" rx="3" fill="var(--brand)"><title>' + d[0] + ": " + d[1] + ' new</title></rect>';
+      if (i % every === 0)
+        out += '<text x="' + (x + bw / 2) + '" y="' + (H - 6) + '" text-anchor="middle">' + d[0].slice(5).replace("-", "/") + '</text>';
+    });
+    svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+    svg.innerHTML = out;
+  }
+  draw();
+  window.addEventListener("resize", draw);
+})();
+</script>

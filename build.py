@@ -6,6 +6,7 @@
 The docs pages are generated from the plugin repo's docs/*.md so the site never
 drifts from the repo. Needs the `markdown` package (pip install markdown)."""
 
+import datetime
 import html
 import json
 import os
@@ -68,6 +69,7 @@ def topbar(root, active):
              ("Docs", root + "docs/getting-started.html", "docs"),
              ("Examples", root + "#examples", "examples"),
              ("Changelog", root + "#changelog", "changelog"),
+             ("Usage", root + "usage.html", "usage"),
              ("Releases", REPO + "/releases", "")]
     nav = "".join('<a href="%s"%s>%s</a>' % (h, ' aria-current="page"' if k and k == active else "", t)
                   for t, h, k in links)
@@ -178,6 +180,29 @@ def numbers():
     return {"{{people}}": people, "{{stars}}": stars, "{{nreleases}}": str(nrel), "{{nblocks}}": str(nblocks)}
 
 
+def build_usage():
+    """The Usage tab. Numbers are baked in at build time from the local stats.json that
+    ~/Developer/viaduct-stats/stats.py writes; only these summaries are published."""
+    try:
+        d = json.load(open(os.path.join(HERE, "stats.json")))
+    except (OSError, ValueError):
+        return
+    floor, share = d["assumptions"]["bot_floor"], d["assumptions"]["repeat"][1]
+    days = [[x["date"], int(round(max(0, x["users"] - floor) * share))] for x in d["days"]]
+    self_dl = d.get("self_downloads", {})
+    engine = sum(max(0, n - self_dl.get(t, 0)) for t, n in d["engine_downloads"].items())
+    updated = datetime.datetime.fromisoformat(d["updated"]).strftime("%B %-d, %Y")
+    src = open(os.path.join(HERE, "usage.src.html")).read()
+    vals = dict(numbers())
+    vals.update({"{{u_people}}": vals["{{people}}"], "{{u_week}}": str(sum(n for _, n in days[-7:])),
+                 "{{u_engine}}": str(engine), "{{u_updated}}": updated, "{{u_days}}": json.dumps(days)})
+    for k, v in vals.items():
+        src = src.replace(k, v)
+    page = (head("Viaduct usage", "How many people use Viaduct, the PCB design plugin for Claude Code.", "")
+            + topbar("", "usage") + src + footer(""))
+    open(os.path.join(OUT, "usage.html"), "w").write(page)
+
+
 def _fix_links(text):
     def repl(m):
         label, target = m.group(1), m.group(2)
@@ -254,5 +279,6 @@ def copy_assets():
 if __name__ == "__main__":
     copy_assets()
     build_index()
+    build_usage()
     build_docs()
     print("built public/ (index + %d docs pages) from %s" % (len(DOCS), PLUGIN))
