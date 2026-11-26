@@ -4,16 +4,47 @@
     <h1>Who's using Viaduct</h1>
     <p class="lead">Updated {{u_updated}}.</p>
 
+    <section class="gh-repo">
+      <div class="gh-repo-top">
+        <a class="gh-repo-name" href="{{repo}}">{{github}}<span>virajrungta</span> / <strong>viaduct</strong></a>
+        <span class="gh-pill">Public</span>
+        <div class="gh-counters">
+          <a class="gh-btn" href="{{repo}}/stargazers">{{star}}Star<span class="gh-count" id="n-stars">{{stars}}</span></a>
+          <a class="gh-btn" href="{{repo}}/forks"><svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M5 5.4a2.25 2.25 0 1 0-1.5 0v.85A2.25 2.25 0 0 0 5.75 8.5h1.5v2.1a2.25 2.25 0 1 0 1.5 0V8.5h1.5a2.25 2.25 0 0 0 2.25-2.25V5.4a2.25 2.25 0 1 0-1.5 0v.85a.75.75 0 0 1-.75.75h-4.5a.75.75 0 0 1-.75-.75zM4.25 2.5a.75.75 0 1 1 0 1.5.75.75 0 0 1 0-1.5m7.5 0a.75.75 0 1 1 0 1.5.75.75 0 0 1 0-1.5M8 12a.75.75 0 1 1 0 1.5A.75.75 0 0 1 8 12"/></svg>Fork<span class="gh-count">{{u_forks}}</span></a>
+          <a class="gh-btn" href="{{repo}}/watchers"><svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 2c1.98 0 3.55.92 4.68 1.97C13.8 5.02 14.55 6.25 14.92 7a2.2 2.2 0 0 1 0 2c-.37.75-1.12 1.98-2.24 3.03C11.55 13.08 9.98 14 8 14s-3.55-.92-4.68-1.97C2.2 10.98 1.45 9.75 1.08 9a2.2 2.2 0 0 1 0-2c.37-.75 1.12-1.98 2.24-3.03C4.45 2.92 6.02 2 8 2m0 1.5c-1.5 0-2.74.7-3.66 1.57A8.5 8.5 0 0 0 2.42 7.7a.7.7 0 0 0 0 .6c.3.62.94 1.66 1.92 2.63C5.26 11.8 6.5 12.5 8 12.5s2.74-.7 3.66-1.57a8.5 8.5 0 0 0 1.92-2.63.7.7 0 0 0 0-.6 8.5 8.5 0 0 0-1.92-2.63C10.74 4.2 9.5 3.5 8 3.5M8 5a3 3 0 1 1 0 6 3 3 0 0 1 0-6m0 1.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3"/></svg>Watch<span class="gh-count">{{u_watchers}}</span></a>
+        </div>
+      </div>
+      <p class="gh-repo-desc">PCB design for Claude Code: describe a board, get a KiCad project ready to order.</p>
+      <p class="gh-repo-meta"><span><i class="gh-dot"></i>Python</span><span>MIT license</span><span>v{{version}}</span></p>
+    </section>
+
     <dl class="numbers">
       <div><dt>{{u_people}}</dt><dd>people have added Viaduct</dd></div>
       <div><dt>{{u_week}}</dt><dd>new in the last 7 days</dd></div>
       <div><dt>{{u_engine}}</dt><dd>directory installs</dd></div>
-      <div><dt id="n-stars">{{stars}}</dt><dd>stars on GitHub</dd></div>
+      <div><dt>{{nreleases}}</dt><dd>releases so far</dd></div>
     </dl>
 
-    <div class="usage-chart">
-      <h2>New people per day</h2>
-      <svg id="chart" role="img" aria-label="New people adding Viaduct per day" width="100%" height="220"></svg>
+    <section class="gh-box">
+      <header class="gh-box-head"><h2>People over time</h2><span class="gh-box-sub" id="total-sub"></span></header>
+      <div class="gh-area" id="area-wrap">
+        <svg id="area" role="img" aria-label="Total people who have added Viaduct, by day" width="100%" height="240"></svg>
+        <div class="gh-tip" id="tip" hidden></div>
+      </div>
+    </section>
+
+    <div class="gh-row">
+      <section class="gh-box">
+        <header class="gh-box-head"><h2>New people per day</h2><span class="gh-box-sub" id="grid-sub"></span></header>
+        <div class="gh-grid-wrap"><svg id="grid" role="img" aria-label="New people per day, as a calendar grid"></svg></div>
+        <div class="gh-legend">Less <i class="l0"></i><i class="l1"></i><i class="l2"></i><i class="l3"></i><i class="l4"></i> More</div>
+      </section>
+      <section class="gh-box">
+        <header class="gh-box-head"><h2>Releases</h2><a class="gh-box-sub" href="{{repo}}/releases">All {{nreleases}} &rarr;</a></header>
+        <ul class="gh-releases">
+{{u_releases}}
+        </ul>
+      </section>
     </div>
 
     <p class="usage-note">Counted from GitHub's daily repository clones, the way Claude Code installs plugins, with automated clones and repeat visits taken out. Viaduct itself collects no data.</p>
@@ -23,31 +54,99 @@
 <script>
 (function () {
   var days = {{u_days}};
-  var svg = document.getElementById("chart");
-  function draw() {
-    var W = Math.max(svg.clientWidth || 600, 320), H = 220, padL = 30, padB = 24, padT = 8;
-    var iw = W - padL - 4, ih = H - padB - padT;
-    var max = Math.max(4, Math.max.apply(null, days.map(function (d) { return d[1]; })));
+  var NS = "http://www.w3.org/2000/svg";
+  function fmt(iso) { var d = new Date(iso + "T00:00:00"); return d.toLocaleDateString("en-US", { month: "short", day: "numeric" }); }
+
+  // People over time: cumulative area, like GitHub's Insights traffic graph
+  var total = 0, cum = days.map(function (d) { total += d[1]; return [d[0], total, d[1]]; });
+  document.getElementById("total-sub").textContent = total + " since " + fmt(days[0][0]);
+  var svg = document.getElementById("area"), wrap = document.getElementById("area-wrap"), tip = document.getElementById("tip");
+  var pts = [];
+  function nice(max) {
     var raw = max / 4, mag = Math.pow(10, Math.floor(Math.log10(raw)));
-    var tick = [1, 2, 5, 10].map(function (m) { return m * mag; }).filter(function (t) { return t >= raw; })[0];
-    var top = tick * 4, bw = iw / days.length, out = "";
+    return [1, 2, 5, 10].map(function (m) { return m * mag; }).filter(function (t) { return t >= raw; })[0];
+  }
+  function drawArea() {
+    var W = Math.max(svg.clientWidth || 600, 300), H = 240, L = 36, R = 10, T = 12, B = 26;
+    var iw = W - L - R, ih = H - T - B, tick = nice(Math.max(4, total)), top = tick * 4;
+    var n = cum.length, step = n > 1 ? iw / (n - 1) : 0, out = "";
     for (var i = 0; i <= 4; i++) {
-      var y = padT + ih - ih * i / 4;
-      out += '<line x1="' + padL + '" x2="' + (W - 4) + '" y1="' + y + '" y2="' + y + '" stroke="var(--border)"/>' +
-             '<text x="' + (padL - 6) + '" y="' + (y + 4) + '" text-anchor="end">' + Math.round(top * i / 4) + '</text>';
+      var y = T + ih - ih * i / 4;
+      out += '<line class="gh-gridline" x1="' + L + '" x2="' + (W - R) + '" y1="' + y + '" y2="' + y + '"/>' +
+             '<text x="' + (L - 8) + '" y="' + (y + 4) + '" text-anchor="end">' + tick * i + '</text>';
     }
-    var every = Math.ceil(days.length / Math.max(4, Math.floor(iw / 56)));
-    days.forEach(function (d, i) {
-      var x = padL + i * bw, h = ih * d[1] / top;
-      out += '<rect x="' + (x + bw * 0.16) + '" y="' + (padT + ih - h) + '" width="' + (bw * 0.68) + '" height="' + h +
-             '" rx="3" fill="var(--brand)"><title>' + d[0] + ": " + d[1] + ' new</title></rect>';
-      if (i % every === 0)
-        out += '<text x="' + (x + bw / 2) + '" y="' + (H - 6) + '" text-anchor="middle">' + d[0].slice(5).replace("-", "/") + '</text>';
+    pts = cum.map(function (d, i) { return [L + i * step, T + ih - ih * d[1] / top]; });
+    var line = pts.map(function (p, i) { return (i ? "L" : "M") + p[0].toFixed(1) + " " + p[1].toFixed(1); }).join("");
+    out += '<defs><linearGradient id="ga" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="var(--gh-line)" stop-opacity=".28"/><stop offset="1" stop-color="var(--gh-line)" stop-opacity="0"/></linearGradient></defs>';
+    out += '<path d="' + line + "L" + pts[n - 1][0] + " " + (T + ih) + "L" + L + " " + (T + ih) + 'Z" fill="url(#ga)"/>';
+    out += '<path d="' + line + '" fill="none" stroke="var(--gh-line)" stroke-width="2" stroke-linejoin="round"/>';
+    var every = Math.ceil(n / Math.max(3, Math.floor(iw / 70)));
+    cum.forEach(function (d, i) {
+      if (i === n - 1 || (i % every === 0 && pts[n - 1][0] - pts[i][0] > 56))
+        out += '<text x="' + pts[i][0] + '" y="' + (H - 6) + '" text-anchor="' + (i === 0 ? "start" : i === n - 1 ? "end" : "middle") + '">' + fmt(d[0]) + '</text>';
     });
+    out += '<line id="cross" class="gh-cross" y1="' + T + '" y2="' + (T + ih) + '" visibility="hidden"/>' +
+           '<circle id="dot" r="4.5" class="gh-dot-mark" visibility="hidden"/>';
     svg.setAttribute("viewBox", "0 0 " + W + " " + H);
     svg.innerHTML = out;
   }
-  draw();
-  window.addEventListener("resize", draw);
+  function hover(e) {
+    var r = svg.getBoundingClientRect(), x = e.clientX - r.left, best = 0;
+    pts.forEach(function (p, i) { if (Math.abs(p[0] - x) < Math.abs(pts[best][0] - x)) best = i; });
+    var p = pts[best], d = cum[best], cross = document.getElementById("cross"), dot = document.getElementById("dot");
+    cross.setAttribute("x1", p[0]); cross.setAttribute("x2", p[0]); cross.setAttribute("visibility", "visible");
+    dot.setAttribute("cx", p[0]); dot.setAttribute("cy", p[1]); dot.setAttribute("visibility", "visible");
+    tip.innerHTML = "<b>" + d[1] + "</b> people<span>" + fmt(d[0]) + " &middot; +" + d[2] + " new</span>";
+    tip.hidden = false;
+    var left = Math.min(Math.max(p[0] - tip.offsetWidth / 2, 0), r.width - tip.offsetWidth);
+    tip.style.left = left + "px"; tip.style.top = Math.max(p[1] - tip.offsetHeight - 12, 0) + "px";
+  }
+  function leave() {
+    tip.hidden = true;
+    ["cross", "dot"].forEach(function (id) { var el = document.getElementById(id); if (el) el.setAttribute("visibility", "hidden"); });
+  }
+  wrap.addEventListener("mousemove", hover);
+  wrap.addEventListener("mouseleave", leave);
+  window.addEventListener("scroll", leave, { passive: true });
+
+  // New people per day: a contribution-style calendar grid
+  function drawGrid() {
+    var g = document.getElementById("grid"), C = 14, G = 4, L = 32, T = 20;
+    var map = {}, max = 0;
+    days.forEach(function (d) { map[d[0]] = d[1]; max = Math.max(max, d[1]); });
+    var last = new Date(days[days.length - 1][0] + "T00:00:00");
+    var first = new Date(days[0][0] + "T00:00:00");
+    var room = Math.floor(((g.parentNode.clientWidth || 600) - 32 - L) / (C + G));
+    var need = Math.floor(((last - first) / 864e5 + first.getDay()) / 7) + 1;
+    var weeks = Math.max(need, Math.min(room, 53));
+    var start = new Date(last);
+    start.setDate(last.getDate() - last.getDay() - (weeks - 1) * 7);
+    var out = "", lastMonth = -1;
+    ["", "Mon", "", "Wed", "", "Fri", ""].forEach(function (s, r) {
+      if (s) out += '<text x="0" y="' + (T + r * (C + G) + C - 2) + '">' + s + '</text>';
+    });
+    for (var w = 0; w < weeks; w++) {
+      for (var r = 0; r < 7; r++) {
+        var day = new Date(start); day.setDate(start.getDate() + w * 7 + r);
+        var iso = day.getFullYear() + "-" + String(day.getMonth() + 1).padStart(2, "0") + "-" + String(day.getDate()).padStart(2, "0");
+        var x = L + w * (C + G), y = T + r * (C + G);
+        if (r === 0 && day.getMonth() !== lastMonth && (day.getDate() <= 7 || w === 0) && w < weeks - 2) {
+          out += '<text x="' + x + '" y="11">' + day.toLocaleDateString("en-US", { month: "short" }) + '</text>';
+          lastMonth = day.getMonth();
+        }
+        if (day > last) continue;
+        var v = map[iso], lvl = v == null ? -1 : v === 0 ? 0 : Math.min(4, Math.ceil(4 * v / max));
+        out += '<rect x="' + x + '" y="' + y + '" width="' + C + '" height="' + C + '" rx="2.5" class="' + (lvl < 0 ? "lx" : "l" + lvl) + '">' +
+               '<title>' + (v == null ? "No data for " + fmt(iso) : v + " new on " + fmt(iso)) + '</title></rect>';
+      }
+    }
+    var W = L + weeks * (C + G), H = T + 7 * (C + G);
+    g.setAttribute("viewBox", "0 0 " + W + " " + H); g.setAttribute("width", W); g.setAttribute("height", H);
+    g.innerHTML = out;
+    document.getElementById("grid-sub").textContent = "peak " + max + " in a day";
+  }
+
+  drawArea(); drawGrid();
+  window.addEventListener("resize", function () { drawArea(); drawGrid(); });
 })();
 </script>

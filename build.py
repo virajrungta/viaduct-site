@@ -180,9 +180,17 @@ def numbers():
     return {"{{people}}": people, "{{stars}}": stars, "{{nreleases}}": str(nrel), "{{nblocks}}": str(nblocks)}
 
 
+def _gh(path):
+    try:
+        return json.load(urllib.request.urlopen("https://api.github.com/repos/virajrungta/viaduct" + path, timeout=10))
+    except Exception:
+        return None
+
+
 def build_usage():
     """The Usage tab. Numbers are baked in at build time from the local stats.json that
-    ~/Developer/viaduct-stats/stats.py writes; only these summaries are published."""
+    ~/Developer/viaduct-stats/stats.py writes; only these summaries are published.
+    Repo counters and releases come from the public GitHub API."""
     try:
         d = json.load(open(os.path.join(HERE, "stats.json")))
     except (OSError, ValueError):
@@ -192,10 +200,21 @@ def build_usage():
     self_dl = d.get("self_downloads", {})
     engine = sum(max(0, n - self_dl.get(t, 0)) for t, n in d["engine_downloads"].items())
     updated = datetime.datetime.fromisoformat(d["updated"]).astimezone().strftime("%B %-d, %Y")
-    src = open(os.path.join(HERE, "usage.src.html")).read()
+
+    repo = _gh("") or {}
+    rels = []
+    for r in (_gh("/releases?per_page=6") or []):
+        when = datetime.datetime.fromisoformat(r["published_at"].replace("Z", "+00:00")).strftime("%b %-d")
+        rels.append('<li><span class="gh-tag">%s</span>%s<span class="gh-when">%s</span></li>' % (
+            html.escape(r["tag_name"]), ' <span class="gh-latest">Latest</span>' if not rels else "", when))
     vals = dict(numbers())
     vals.update({"{{u_people}}": vals["{{people}}"], "{{u_week}}": str(sum(n for _, n in days[-7:])),
-                 "{{u_engine}}": str(engine), "{{u_updated}}": updated, "{{u_days}}": json.dumps(days)})
+                 "{{u_engine}}": str(engine), "{{u_updated}}": updated, "{{u_days}}": json.dumps(days),
+                 "{{u_forks}}": str(repo.get("forks_count", "–")),
+                 "{{u_watchers}}": str(repo.get("subscribers_count", "–")),
+                 "{{u_releases}}": "\n".join(rels), "{{u_since}}": days[0][0] if days else "",
+                 "{{github}}": icon("github"), "{{star}}": STAR, "{{repo}}": REPO, "{{version}}": VERSION})
+    src = open(os.path.join(HERE, "usage.src.html")).read()
     for k, v in vals.items():
         src = src.replace(k, v)
     page = (head("Viaduct usage", "How many people use Viaduct, the PCB design plugin for Claude Code.", "")
