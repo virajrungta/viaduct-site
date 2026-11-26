@@ -191,7 +191,7 @@ def build_usage():
     days = [[x["date"], int(round(max(0, x["users"] - floor) * share))] for x in d["days"]]
     self_dl = d.get("self_downloads", {})
     engine = sum(max(0, n - self_dl.get(t, 0)) for t, n in d["engine_downloads"].items())
-    updated = datetime.datetime.fromisoformat(d["updated"]).strftime("%B %-d, %Y")
+    updated = datetime.datetime.fromisoformat(d["updated"]).astimezone().strftime("%B %-d, %Y")
     src = open(os.path.join(HERE, "usage.src.html")).read()
     vals = dict(numbers())
     vals.update({"{{u_people}}": vals["{{people}}"], "{{u_week}}": str(sum(n for _, n in days[-7:])),
