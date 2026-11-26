@@ -41,6 +41,9 @@ def icon(name, cls="icon"):
     return '<svg class="%s" viewBox="0 0 24 24" aria-hidden="true"><path d="%s"/></svg>' % (cls, d)
 
 
+CSS_V = __import__("hashlib").sha1(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "site.css"), "rb").read()).hexdigest()[:8]
+
+
 def head(title, desc, root):
     return """<!doctype html>
 <html lang="en">
@@ -58,10 +61,10 @@ def head(title, desc, root):
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500;600&display=swap">
-<link rel="stylesheet" href="%ssite.css">
+<link rel="stylesheet" href="%ssite.css?v=%s">
 </head>
 <body>
-""" % (html.escape(title), html.escape(desc), html.escape(title), html.escape(desc), root, root, root)
+""" % (html.escape(title), html.escape(desc), html.escape(title), html.escape(desc), root, root, root, CSS_V)
 
 
 def topbar(root, active):
